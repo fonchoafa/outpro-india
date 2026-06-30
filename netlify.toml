@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm run build --workspace=frontend"
+  command = "npm install && npm run build --prefix frontend"
   publish = "frontend/dist"
   functions = "api"
 
