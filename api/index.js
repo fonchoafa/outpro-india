@@ -1,3 +1,4 @@
+// api/index.js
 import express from "express";
 import cors from "cors";
 import { connectDB } from "../backend/config/db.js";
@@ -30,6 +31,21 @@ app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/testimonials", testimonialsRoutes);
 app.use("/api/contact", contactRoutes);
 
+// Root route
+app.get("/api", (req, res) => {
+  res.json({ 
+    message: "Outpro.India API is running",
+    endpoints: [
+      "/api/health",
+      "/api/services",
+      "/api/services/:slug",
+      "/api/portfolio",
+      "/api/testimonials",
+      "/api/contact"
+    ]
+  });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -39,18 +55,24 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// 404 handler for API
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'API route not found' });
 });
 
-// Connect to MongoDB
+// Connect to MongoDB with caching
 let isConnected = false;
 
 export default async function handler(req, res) {
   if (!isConnected) {
-    await connectDB();
-    isConnected = true;
+    try {
+      await connectDB();
+      isConnected = true;
+      console.log('✅ MongoDB connected');
+    } catch (error) {
+      console.error('❌ MongoDB connection error:', error);
+      // Don't throw, let the request proceed but fail gracefully
+    }
   }
   return app(req, res);
 }
