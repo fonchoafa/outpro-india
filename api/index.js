@@ -16,12 +16,21 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health check
+// Health check - MUST BE FIRST
 app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "OK", 
     message: "Outpro.India API is running",
     timestamp: new Date().toISOString()
+  });
+});
+
+// Test endpoint
+app.get("/api/test", (req, res) => {
+  res.json({ 
+    message: "Test endpoint is working!",
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV
   });
 });
 
@@ -36,6 +45,7 @@ app.get("/api", (req, res) => {
   res.json({ 
     message: "Outpro.India API is running",
     endpoints: [
+      "/api/test",
       "/api/health",
       "/api/services",
       "/api/services/:slug",
@@ -55,24 +65,33 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler for API
+// 404 handler for API - THIS MUST BE LAST
 app.use((req, res) => {
-  res.status(404).json({ error: 'API route not found' });
+  res.status(404).json({ 
+    error: 'API route not found',
+    path: req.path,
+    method: req.method
+  });
 });
 
-// Connect to MongoDB with caching
+// MongoDB connection with caching
 let isConnected = false;
 
 export default async function handler(req, res) {
+  // Log the request for debugging
+  console.log(`📨 ${req.method} ${req.url}`);
+  
+  // Connect to MongoDB if not already connected
   if (!isConnected) {
     try {
       await connectDB();
       isConnected = true;
       console.log('✅ MongoDB connected');
     } catch (error) {
-      console.error('❌ MongoDB connection error:', error);
-      // Don't throw, let the request proceed but fail gracefully
+      console.error('❌ MongoDB connection error:', error.message);
+      // Continue without MongoDB - API will still work for test endpoints
     }
   }
+  
   return app(req, res);
 }

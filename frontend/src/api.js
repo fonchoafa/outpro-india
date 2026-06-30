@@ -1,7 +1,7 @@
 // frontend/src/api.js
 import axios from "axios";
 
-// Use relative path for Vercel deployment
+// For Vercel, use relative path
 const API_URL = import.meta.env.VITE_API_URL || "";
 
 const api = axios.create({
@@ -18,7 +18,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       console.error('API Error:', error.response.data);
-      throw new Error(error.response.data.message || 'Server error occurred');
+      throw new Error(error.response.data.message || error.response.data.error || 'Server error occurred');
     } else if (error.request) {
       console.error('Network Error:', error.request);
       throw new Error('Unable to reach server. Please check your connection.');
@@ -29,7 +29,7 @@ api.interceptors.response.use(
   }
 );
 
-// API calls - using relative paths (no /api prefix needed)
+// API calls - using relative paths
 export const getServices = () => api.get("/services").then((r) => r.data);
 export const getService = (slug) => api.get(`/services/${slug}`).then((r) => r.data);
 export const getPortfolio = (featuredOnly = false) =>
