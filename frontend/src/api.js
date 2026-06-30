@@ -1,15 +1,32 @@
-import axios from "axios";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          axios: ['axios'],
+        },
+      },
+    },
+  },
+  preview: {
+    port: 4173,
+  },
 });
-
-export const getServices = () => api.get("/api/services").then((r) => r.data);
-export const getService = (slug) => api.get(`/api/services/${slug}`).then((r) => r.data);
-export const getPortfolio = (featuredOnly = false) =>
-  api.get(`/api/portfolio${featuredOnly ? "?featured=true" : ""}`).then((r) => r.data);
-export const getTestimonials = (featuredOnly = false) =>
-  api.get(`/api/testimonials${featuredOnly ? "?featured=true" : ""}`).then((r) => r.data);
-export const submitContactForm = (data) => api.post("/api/contact", data).then((r) => r.data);
-
-export default api;
