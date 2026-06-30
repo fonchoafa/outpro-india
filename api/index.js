@@ -1,17 +1,36 @@
 // api/index.js
 import express from "express";
 import cors from "cors";
+import { connectDB } from "../backend/config/db.js";
+import servicesRoutes from "../backend/routes/services.js";
+import portfolioRoutes from "../backend/routes/portfolio.js";
+import testimonialsRoutes from "../backend/routes/testimonials.js";
+import contactRoutes from "../backend/routes/contact.js";
 
 const app = express();
 
-// Middleware
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "*",
   credentials: true
 }));
 app.use(express.json());
 
-// Health check
+let isConnected = false;
+
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+      isConnected = true;
+      console.log('✅ MongoDB connected');
+    } catch (error) {
+      console.error('❌ MongoDB connection error:', error.message);
+      return res.status(500).json({ error: 'Database connection failed' });
+    }
+  }
+  next();
+});
+
 app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "OK", 
@@ -20,7 +39,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Test endpoint
 app.get("/api/test", (req, res) => {
   res.json({ 
     message: "Test endpoint is working!",
@@ -28,15 +46,18 @@ app.get("/api/test", (req, res) => {
   });
 });
 
-// Root API route
 app.get("/api", (req, res) => {
   res.json({ 
     message: "Outpro.India API is running",
-    endpoints: ["/api/test", "/api/health"]
+    endpoints: ["/api/test", "/api/health", "/api/services", "/api/portfolio", "/api/testimonials", "/api/contact"]
   });
 });
 
-// 404 handler
+app.use("/api/services", servicesRoutes);
+app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/testimonials", testimonialsRoutes);
+app.use("/api/contact", contactRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ 
     error: 'API route not found',
@@ -44,15 +65,4 @@ app.use((req, res) => {
   });
 });
 
-// Export the handler
-export default async function handler(req, res) {
-  try {
-    return app(req, res);
-  } catch (error) {
-    console.error('Handler error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: error.message 
-    });
-  }
-}
+export default app;
