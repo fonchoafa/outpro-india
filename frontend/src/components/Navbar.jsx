@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import Logo from "./Logo.jsx";
 
 const links = [
   { to: "/", label: "Home" },
@@ -16,8 +17,8 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100">
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="font-bold text-xl text-brand-secondary">
-          Outpro<span className="text-brand-primary">.India</span>
+        <Link to="/" className="flex items-center">
+          <Logo />
         </Link>
 
         <ul className="hidden md:flex items-center gap-8 text-sm font-medium">

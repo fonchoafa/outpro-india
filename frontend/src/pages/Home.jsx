@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Section from "../components/Section.jsx";
+import Newsletter from "../components/Newsletter.jsx";
 import { getServices, getPortfolio, getTestimonials } from "../api.js";
 
 export default function Home() {
@@ -40,8 +41,16 @@ export default function Home() {
               </Link>
             </div>
           </motion.div>
-          <div className="bg-white/10 rounded-2xl h-72 flex items-center justify-center text-slate-300 text-sm">
-            [ Hero illustration / brand image placeholder ]
+          <div className="bg-white/10 rounded-2xl overflow-hidden h-72">
+            <img
+              src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=900&h=600&q=70"
+              alt="Outpro.India digital products showcase"
+              fetchpriority="high"
+              decoding="async"
+              width="900"
+              height="600"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>
@@ -86,9 +95,15 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-6">
           {(projects.length ? projects : placeholderProjects).map((p, i) => (
             <div key={p._id || i} className="rounded-xl overflow-hidden border border-slate-100">
-              <div className="h-40 bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                [project image]
-              </div>
+              <img
+                src={p.coverImage || homeFallbackImages[i % homeFallbackImages.length]}
+                alt={p.title}
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="400"
+                className="h-40 w-full object-cover bg-slate-100"
+              />
               <div className="p-4">
                 <h3 className="font-semibold">{p.title}</h3>
                 <p className="text-sm text-slate-500">{p.category}</p>
@@ -110,9 +125,20 @@ export default function Home() {
           ))}
         </div>
       </Section>
+
+      {/* Newsletter */}
+      <Section>
+        <Newsletter />
+      </Section>
     </>
   );
 }
+
+const homeFallbackImages = [
+  "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=400&q=70", // analytics dashboard
+  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&h=400&q=70", // ecommerce/shopping
+  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&h=400&q=70", // code/SaaS
+];
 
 const placeholderServices = [
   { slug: "web-development", title: "Web Development", shortDescription: "Custom, scalable websites built for performance." },
