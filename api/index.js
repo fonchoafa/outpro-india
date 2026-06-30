@@ -1,11 +1,6 @@
 // api/index.js
 import express from "express";
 import cors from "cors";
-import { connectDB } from "../backend/config/db.js";
-import servicesRoutes from "../backend/routes/services.js";
-import portfolioRoutes from "../backend/routes/portfolio.js";
-import testimonialsRoutes from "../backend/routes/testimonials.js";
-import contactRoutes from "../backend/routes/contact.js";
 
 const app = express();
 
@@ -33,24 +28,11 @@ app.get("/api/test", (req, res) => {
   });
 });
 
-// Routes
-app.use("/api/services", servicesRoutes);
-app.use("/api/portfolio", portfolioRoutes);
-app.use("/api/testimonials", testimonialsRoutes);
-app.use("/api/contact", contactRoutes);
-
 // Root API route
 app.get("/api", (req, res) => {
   res.json({ 
     message: "Outpro.India API is running",
-    endpoints: [
-      "/api/test",
-      "/api/health", 
-      "/api/services",
-      "/api/portfolio",
-      "/api/testimonials",
-      "/api/contact"
-    ]
+    endpoints: ["/api/test", "/api/health"]
   });
 });
 
@@ -58,35 +40,19 @@ app.get("/api", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ 
     error: 'API route not found',
-    path: req.path,
-    method: req.method
+    path: req.path
   });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
-// MongoDB connection
-let isConnected = false;
-
+// Export the handler
 export default async function handler(req, res) {
-  console.log(`📨 ${req.method} ${req.url}`);
-  
-  if (!isConnected) {
-    try {
-      await connectDB();
-      isConnected = true;
-      console.log('✅ MongoDB connected');
-    } catch (error) {
-      console.error('❌ MongoDB connection error:', error.message);
-    }
+  try {
+    return app(req, res);
+  } catch (error) {
+    console.error('Handler error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
   }
-  
-  return app(req, res);
 }

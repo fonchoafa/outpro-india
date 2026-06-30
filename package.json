@@ -1,6 +1,7 @@
 {
   "name": "outpro-india",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "npm run dev --workspace=frontend",
     "build": "npm run build --workspace=frontend",
