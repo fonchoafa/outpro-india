@@ -7,10 +7,9 @@ const app = express();
 
 app.use(express.json());
 
-// Connect to MongoDB
 let isConnected = false;
 
-export default async function handler(req, res) {
+app.use(async (req, res, next) => {
   if (!isConnected) {
     try {
       await connectDB();
@@ -18,9 +17,12 @@ export default async function handler(req, res) {
       console.log('✅ MongoDB connected');
     } catch (error) {
       console.error('❌ MongoDB connection error:', error.message);
+      return res.status(500).json({ error: 'Database connection failed' });
     }
   }
-  
-  // Apply the routes
-  return servicesRoutes(req, res);
-}
+  next();
+});
+
+app.use("/api/services", servicesRoutes);
+
+export default app;
