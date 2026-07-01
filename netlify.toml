@@ -1,12 +1,9 @@
 [build]
-  command = "npm install --prefix frontend && npx --prefix frontend vite build"
+  command = "cd frontend && npm install && npm run build"
   publish = "frontend/dist"
-  functions = "api"
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/index/:splat"
-  status = 200
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/*"
