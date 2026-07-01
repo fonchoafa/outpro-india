@@ -17,7 +17,7 @@ outpro-india/
 ```bash
 cd backend
 npm install
-cp .env.example .env   # fill in your MongoDB Atlas URI
+cp .env   # fill in your MongoDB Atlas URI
 npm run dev
 ```
 
