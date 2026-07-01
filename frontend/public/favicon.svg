@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Outpro.India icon">
+  <rect x="0" y="0" width="32" height="32" rx="8" fill="#1A56DB" />
+  <path
+    d="M9 24 L16 8 L23 24 M11.5 18 H20.5"
+    stroke="white"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    fill="none"
+  />
+</svg>

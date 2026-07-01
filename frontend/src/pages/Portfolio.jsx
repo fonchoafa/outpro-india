@@ -1,45 +1,36 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Add this import
+import { Link } from "react-router-dom";
 import Section from "../components/Section.jsx";
 import { getPortfolio } from "../api.js";
 
-// Fallback portfolio data with meaningful descriptions
+// Fallback portfolio data with meaningful descriptions - KPIs removed
 const fallbackPortfolio = [
   {
     _id: "1",
-    title: "Project Beta",
-    client: "Globex",
+    title: "E-commerce Storefront",
+    client: "Placeholder Client B",
     category: "E-commerce",
     description: "A high-performance e-commerce platform built for scale, featuring seamless payment integration, personalized shopping experiences, and advanced inventory management. The solution reduced cart abandonment by 25% and increased mobile conversions by 40%.",
     coverImage: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=600&q=70",
-    kpis: [
-      { value: "1.8s", label: "Load time" },
-      { value: "+45%", label: "Revenue growth" }
-    ]
+    kpis: [] // Empty array - no KPIs
   },
   {
     _id: "2",
-    title: "Project Gamma",
-    client: "Initech",
+    title: "SaaS Platform MVP",
+    client: "Placeholder Client C",
     category: "SaaS Platform",
     description: "A comprehensive SaaS solution that streamlines business operations with intuitive dashboards, real-time analytics, and automated workflows. The platform serves 10,000+ users across 50 countries, with 99.9% uptime and a 4.8/5 user satisfaction rating.",
     coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&h=600&q=70",
-    kpis: [
-      { value: "10K+", label: "Active users" },
-      { value: "99.9%", label: "Uptime" }
-    ]
+    kpis: [] // Empty array - no KPIs
   },
   {
     _id: "3",
-    title: "Project Alpha",
-    client: "Acme Corp",
+    title: "Corporate Website Revamp",
+    client: "Placeholder Client A",
     category: "Corporate Website",
     description: "A modern corporate website redesign that transformed the brand's digital presence. The new platform features a dynamic CMS, engaging multimedia content, and optimized user journeys that doubled lead generation and improved brand perception scores by 35%.",
     coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=600&q=70",
-    kpis: [
-      { value: "+32%", label: "Conversion lift" },
-      { value: "2x", label: "Lead generation" }
-    ]
+    kpis: [] // Empty array - no KPIs
   }
 ];
 
@@ -58,17 +49,16 @@ export default function Portfolio() {
   useEffect(() => {
     getPortfolio()
       .then(data => {
-        // If API returns data with descriptions, use it; otherwise use fallback
         if (data && data.length > 0) {
-          // Merge API data with fallback descriptions if needed
           const mergedData = data.map((project, index) => {
             const fallback = fallbackPortfolio[index % fallbackPortfolio.length];
             return {
               ...project,
-              // Use fallback description if API description is placeholder
               description: project.description && !project.description.includes('[Placeholder]') 
                 ? project.description 
-                : fallback?.description || project.description
+                : fallback?.description || project.description,
+              // Ensure KPIs are empty for all projects
+              kpis: []
             };
           });
           setProjects(mergedData);
@@ -134,22 +124,7 @@ export default function Portfolio() {
               <p className="text-sm text-slate-600 leading-relaxed">
                 {p.description || "A transformative project delivered with excellence."}
               </p>
-              {p.kpis?.length > 0 && (
-                <div className="flex gap-6 mt-4 pt-4 border-t border-slate-100">
-                  {p.kpis.map((k, i) => (
-                    <div key={i} className="text-center">
-                      <p className="font-bold text-brand-primary text-lg">{k.value}</p>
-                      <p className="text-xs text-slate-500 uppercase tracking-wide">{k.label}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Link 
-                to={`/portfolio/${p._id || p.slug}`}
-                className="inline-block mt-4 text-sm font-medium text-brand-primary hover:underline"
-              >
-                View Case Study →
-              </Link>
+              {/* KPIs section removed - no longer displayed */}
             </div>
           </div>
         ))}
